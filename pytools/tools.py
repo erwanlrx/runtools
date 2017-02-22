@@ -4,9 +4,12 @@ import subprocess as sp
 
 
 # Call bash function from python
-def cmd(command):
-    out = sp.check_output(command, shell=True)
-    return out.split('\n')[:-1]
+def cmd(command, print_command=False):
+    if print_command:
+        print(command)
+    else:
+        out = sp.check_output(command, shell=True)
+        return out.split('\n')[:-1]
 
 
 # Query the user to check parameters settings

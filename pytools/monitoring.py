@@ -29,7 +29,7 @@ if __name__ == '__main__':
                         print_list = [job_name, job_number, duration]
 
                         # Extracting information from the OAR files
-                        # Enable extraction of the OAR file stdou and stderr information
+                        # Enable extraction of the OAR file stdout and stderr information
                         OAR_filename = os.path.join(OARPATH, job_name, job_number + '_stderr.txt')
                         if os.path.exists(OAR_filename):
                             tail = cmd('tail -n 1 ' + OAR_filename)
