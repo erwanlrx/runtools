@@ -55,6 +55,8 @@ class RunMeta(object):
 
             # Job management
             # run a job with oarsub (its job_id is retrieved)
+            print(cmd(self.oarsub_command))
+
             self.job_id = cmd(self.oarsub_command)[-1].split('=')[-1]
             # wait for the job to end
             while not self.job_ended:
@@ -65,6 +67,7 @@ class RunMeta(object):
             # TODO: check if in  a killed besteffort, that the script is not deleted
             if os.path.exists(self.script_filename):
                 # delete the bash script
+                print('here')
                 cmd('rm ' + self.script_filename)
                 # send a report of the crash by mail
                 command_mail = 'cat ' + os.path.join(self.oarsub_dirname, self.job_id + '_stderr.txt')
@@ -101,7 +104,6 @@ class RunMeta(object):
         # write into the bash script
         with open(self.script_filename, 'w') as f:
             for command in commands:
-                print(command)
                 f.write('{0} \n'.format(command))
         # give the permission to the bash script to execute
         cmd('chmod +x ' + self.script_filename)

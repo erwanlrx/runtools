@@ -1,8 +1,7 @@
 import subprocess as sp
 import os, sys
 from pytools.tools import cmd
-
-OARPATH = '/home/lear/erleroux/OAR'
+from settings import settings
 
 """ Monitor only the master"""
 
@@ -12,7 +11,7 @@ if __name__ == '__main__':
         print_line = ' \nMonitoring... \n'
         for machine in ['edgar', 'clear']:
             try:
-                jobs = cmd("ssh " + machine + " 'oarstat | grep erleroux'")
+                jobs = cmd("ssh " + machine + " 'oarstat | grep " + settings['LOGIN'] + "'")
             except sp.CalledProcessError as e:
                 jobs = []
                 print_line += 'No jobs running on ' + machine + '\n'

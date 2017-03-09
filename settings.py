@@ -4,6 +4,7 @@ personnal_settings = {
     'EMAIL': 'erwan.le-roux@inria.fr',
     'MACHINE': 'aquarius',
     'HOME': '/home/lear/erleroux',
+    'LOGIN': 'erleroux',
     'OAR_DIRNAME': 'OAR',
     'SCRIPT_DIRNAME': 'script',
     'OARSUB_DIRNAME': 'oarsub'

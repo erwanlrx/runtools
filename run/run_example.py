@@ -14,7 +14,7 @@ class RunExample(RunCPU):
 
     @property
     def oarsub_options(self):
-        return super().oarsub_options + '-pncore=1 -l "nodes=1,walltime=1:0:0"'
+        return super().oarsub_options + ' -l "nodes=1,walltime=1:0:0"'
 
 
 if __name__ == '__main__':
