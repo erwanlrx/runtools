@@ -1,4 +1,4 @@
-from tools.tools import cmd
+from pytools.tools import cmd
 
 if __name__ == '__main__':
-    cmd('sleep 5')
+    cmd('sleep 30')

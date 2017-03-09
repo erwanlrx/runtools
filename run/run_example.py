@@ -1,16 +1,22 @@
-from run.run_concrete import RunCPU
+from __future__ import absolute_import
+from run.run_machine import RunCPU
 import os, sys
+from settings import settings
+
+RUN_PATH = os.path.join(settings['HOME'], 'src/tools/run')
 
 
 class RunExample(RunCPU):
+    def __init__(self, run_argv):
+        RunCPU.__init__(self, run_argv)
+        self.path_exe_run = os.path.join(RUN_PATH, 'example.py')
+        self.job_name = 'example'
 
-    def __init__(self):
-        RunCPU.__init__(self)
-        self.path_exe_run = os.path.join(self.HOME, self.run_dirname, 'test.py')
+    @property
+    def oarsub_options(self):
+        return super().oarsub_options + '-pncore=1 -l "nodes=1,walltime=1:0:0"'
 
-    def run_options(self):
-        return RunCPU.oarsub_options(self) + '-pncore=1 -l "nodes=1,walltime=1:0:0"'
 
 if __name__ == '__main__':
-    print(sys.argv)
-    RunExample().run(sys.argv[1:])
+    run_example_argv = sys.argv[1:]
+    RunExample(run_argv=run_example_argv).run()

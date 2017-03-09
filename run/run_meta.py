@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 import os, sys
 from random import randint
 from pytools.tools import cmd
@@ -17,14 +16,14 @@ General pipeline of the run method:
 
 General organisation:
     -job_dirname is defined as settings['HOME']/settings['OAR_DIRNAME']/job_name
-    -Bash Script are stored in job_dirname/scripts
-    -stdout and stderr files for oarsub are stored in job_dirname/std
+    -Bash Script are stored in job_dirname/settings['SCRIPT_DIRNAME']
+    -stdout and stderr files for oarsub are stored in job_dirname/setting['OARSUB_DIRNAME']
 """
 
 
 class RunMeta(object):
-    def __init__(self, argv):
-        self.argv = argv
+    def __init__(self, run_argv):
+        self.run_argv = run_argv
         # Organization settings
         self.job_name = None
         # Run settings
@@ -34,15 +33,12 @@ class RunMeta(object):
         self.path_exe_monitor = None
         self.previous_jobs = []  # type: list[RunMeta]
         self.oarstat_check_frequency = 5
-        # Internal settings (no override of these field)
+        # Internal settings (do not override these field)
         self.job_crashed = False
         self.job_id = None
         self.script_filename_key = None
 
     def run(self):
-        # Script generation
-        self.generate_script()
-
         # Dependency wrt previous jobs
         # wait for previous jobs to end
         while not self.previous_jobs_ended:
@@ -54,6 +50,8 @@ class RunMeta(object):
                 break
 
         if not self.job_crashed:
+            # Script generation
+            self.generate_script()
 
             # Job management
             # run a job with oarsub (its job_id is retrieved)
@@ -88,13 +86,16 @@ class RunMeta(object):
         Generate an executable bash script containing a list of commands
         :param argv: parameters for the script to run
         """
+        # build script_dirname if it has not yet been created
+        if not os.path.exists(self.script_dirname):
+            os.makedirs(self.script_dirname)
         # create script_filename file
         cmd('touch ' + self.script_filename)
         # building the list of commands for the script
         commands = list()
         # launch a python exe
         print(self.path_exe_run)
-        commands.append('python ' + self.path_exe_run + ' ' + ' '.join(self.argv))
+        commands.append('python ' + self.path_exe_run + ' ' + ' '.join(self.run_argv))
         # script file delete itself when finished
         commands.append('rm ' + self.script_filename + '\n')
         # write into the bash script
@@ -129,19 +130,21 @@ class RunMeta(object):
 
     @property
     def get_script_filename(self):
-        return os.path.join(self.job_dirname,
-                            settings['SCRIPT_DIRNAME'],
+        return os.path.join(self.script_dirname,
                             str(self.script_filename_key) + '.sh')
 
     @property
     def job_ended(self):
-        oarstat_lines = cmd("ssh " + self.machine_name + " ' oarstat ' ")
         ended = True
-        for line in oarstat_lines:
-            if self.job_id in line:
-                ended = False
-                break
-        return ended
+        if self.job_crashed:
+            return ended
+        else:
+            oarstat_lines = cmd("ssh " + self.machine_name + " ' oarstat ' ")
+            for line in oarstat_lines:
+                if self.job_id in line:
+                    ended = False
+                    break
+            return ended
 
     @property
     def previous_jobs_ended(self):
@@ -162,7 +165,7 @@ class RunMeta(object):
         command += self.oarsub_options
         # Naming the job
         command += ' --name="' + self.job_name + '"'
-        # Build the std directory
+        # Build the oarsub directory
         if not os.path.exists(self.oarsub_dirname):
             os.makedirs(self.oarsub_dirname)
         # Redirecting the stdout and stderr
@@ -186,3 +189,7 @@ class RunMeta(object):
     @property
     def oarsub_dirname(self):
         return os.path.join(self.job_dirname, settings['OARSUB_DIRNAME'])
+
+    @property
+    def script_dirname(self):
+        return os.path.join(self.job_dirname, settings['SCRIPT_DIRNAME'])
