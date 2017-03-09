@@ -1,4 +1,4 @@
-from run_meta import RunGPU, RunCPU
+from run.run_meta import RunGPU, RunCPU
 import os
 import sys
 
@@ -11,8 +11,9 @@ class RunDeeplabCPU(RunCPU):
         RunCPU.__init__(self)
         self.path_exe = os.path.join(PYTHON_DEEPLAB_DIR, 'main.py')
 
+    @property
     def run_options(self):
-        return RunCPU.oarsub_options(self) + '-pncore=32 -l "nodes=1,walltime=12:0:0"'
+        return RunCPU.oarsub_options + '-pncore=32 -l "nodes=1,walltime=12:0:0"'
 
 
 class RunDeeplabTrainGPU(RunGPU):

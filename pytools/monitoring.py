@@ -4,6 +4,8 @@ from pytools.tools import cmd
 
 OARPATH = '/home/lear/erleroux/OAR'
 
+""" Monitor only the master"""
+
 if __name__ == '__main__':
 
     while 1:

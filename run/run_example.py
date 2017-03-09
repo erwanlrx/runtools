@@ -1,8 +1,8 @@
-from run_meta import RunCPU
+from run.run_concrete import RunCPU
 import os, sys
 
 
-class RunTest(RunCPU):
+class RunExample(RunCPU):
 
     def __init__(self):
         RunCPU.__init__(self)
@@ -13,4 +13,4 @@ class RunTest(RunCPU):
 
 if __name__ == '__main__':
     print(sys.argv)
-    RunTest().run(sys.argv[1:])
+    RunExample().run(sys.argv[1:])
