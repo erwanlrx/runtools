@@ -9,7 +9,6 @@ def cmd(command, print_command=False):
         print(command)
     else:
         out = sp.check_output(command, shell=True)
-
         if isinstance(out, bytes):
             out = out.decode("utf-8")
         return out.split('\n')[:-1]

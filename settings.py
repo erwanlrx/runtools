@@ -1,24 +1,19 @@
-# TODO: Use the same argument reader as in Tensorflow to read the arguments
+import os
 
-personnal_settings = {
-    'EMAIL': 'erwan.le-roux@inria.fr',
-    'MACHINE': 'aquarius',
-    'HOME': '/home/lear/erleroux',
-    'LOGIN': 'erleroux',
-    'OAR_DIRNAME': 'OAR',
-    'SCRIPT_DIRNAME': 'script',
-    'OARSUB_DIRNAME': 'oarsub'
-}
+# Personnal settings
+EMAIL = 'erwan.le-roux@inria.fr'
+LOGIN = 'erleroux'
+MACHINE = 'aquarius'
 
-inria_settings = {
-    'CPU_MACHINE': 'clear',
-    'GPU_MACHINE': 'edgar'
+# Directory settings
+HOME = '/home/lear/erleroux'
+OAR_DIRNAME = os.path.join(HOME, 'OAR')
+OARSUB_DIRNAME = os.path.join(OAR_DIRNAME, 'oarsub')
+SCRIPT_DIRNAME = os.path.join(OAR_DIRNAME, 'script')
 
-}
-
-# General settings dictionnary
-settings = dict()
-settings.update(personnal_settings)
-settings.update(inria_settings)
+# INRIA settings
+CPU_MACHINE = 'clear'
+GPU_MACHINE = 'edgar'
+GPU_MAX_DEFAULT_JOBS = 2
 
 

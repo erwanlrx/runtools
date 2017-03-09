@@ -1,24 +1,7 @@
 import os, sys
 from random import randint
 from pytools.tools import cmd
-from settings import settings
-
-"""
-General pipeline of the run method:
-    -A bash script is generated
-    -Wait for previous jobs to be ended
-    -If previous jobs have not crashed:
-        -A job is launched to process the bash script we just generated
-        -Wait while the job is not done
-        -If the job failed (detected if the script is still there, because if no exception the script should delete itself)
-         then in that case, the stderr is sent by email
-        -If the job was a success, data are extracted from stdout and stderr
-
-General organisation:
-    -job_dirname is defined as settings['HOME']/settings['OAR_DIRNAME']/job_name
-    -Bash Script are stored in job_dirname/settings['SCRIPT_DIRNAME']
-    -stdout and stderr files for oarsub are stored in job_dirname/setting['OARSUB_DIRNAME']
-"""
+from settings import EMAIL, SCRIPT_DIRNAME, OARSUB_DIRNAME
 
 
 class RunMeta(object):
@@ -39,50 +22,52 @@ class RunMeta(object):
         self.script_filename_key = None
 
     def run(self):
-        # Dependency wrt previous jobs
-        # wait for previous jobs to end
-        while not self.previous_jobs_ended:
-            cmd('sleep %i' % self.oarstat_check_frequency)
+        """
+        General pipeline of the run method:
+            -If previous jobs have not crashed:
+                -A bash script is generated
+                -A job is launched to process the bash script we just generated
+        """
         # check if previous jobs have crashed or not
         for jobs in self.previous_jobs:
             if jobs.job_crashed:
                 self.job_crashed = True
                 break
-
         if not self.job_crashed:
-            # Script generation
+            # script generation
             self.generate_script()
-
-            # Job management
             # run a job with oarsub (its job_id is retrieved)
-            print(cmd(self.oarsub_command))
-
             self.job_id = cmd(self.oarsub_command)[-1].split('=')[-1]
-            # wait for the job to end
-            while not self.job_ended:
-                cmd('sleep %i' % self.oarstat_check_frequency)
 
-            # Job study
-            # check if job ended well (i.e., script should have deleted itself)
-            # TODO: check if in  a killed besteffort, that the script is not deleted
-            if os.path.exists(self.script_filename):
-                # delete the bash script
-                print('here')
-                cmd('rm ' + self.script_filename)
-                # send a report of the crash by mail
-                command_mail = 'cat ' + os.path.join(self.oarsub_dirname, self.job_id + '_stderr.txt')
-                command_mail += ' | mail -s "Failure report of ' + self.job_name + '" ' + settings['EMAIL']
-                cmd(command_mail)
-                # declare job as crashed to avoid running following jobs
-                self.job_crashed = True
-            else:
-                self.job_done = True
-                # final monitoring
-                self.monitoring()
-                # TODO Philippe lui copie les fichier OAR a une destination correspond au model que l on a en entraine,
-                # TODO proposer surement l empalcement du fichier ou le fichier doit etre copie
-                # TODO in the process let the path to the OAR files to come back process them again if needed
-                # self.path_exe_parse()
+    def add_previous_run(self, run):
+        assert run not in self.previous_jobs
+        self.previous_jobs.append(run)
+
+    @property
+    def job_ended(self):
+        # TODO: each time this function is called, check if
+        # TODO: this is the place where I will see if a job crashed or not. But this function will be called often
+        ended = True
+        if self.job_crashed:
+            return ended
+        else:
+            oarstat_lines = cmd("ssh " + self.machine_name + " ' oarstat ' ")
+            for line in oarstat_lines:
+                if self.job_id in line:
+                    ended = False
+                    break
+            return ended
+
+    @property
+    def previous_jobs_ended(self):
+        ended = True
+        for jobs in self.previous_jobs:
+            if jobs.job_ended:
+                ended = False
+                break
+        return ended
+
+    """ Management of the bash script, that are fed to oarsub """
 
     def generate_script(self):
         """
@@ -109,9 +94,19 @@ class RunMeta(object):
         cmd('chmod +x ' + self.script_filename)
 
     @property
-    def job_dirname(self):
+    def oarsub_dirname(self):
         assert self.job_name is not None
-        return os.path.join(settings['HOME'], settings['OAR_DIRNAME'], self.job_name)
+        return os.path.join(OARSUB_DIRNAME, self.job_name)
+
+    @property
+    def script_dirname(self):
+        assert self.job_name is not None
+        return os.path.join(SCRIPT_DIRNAME, self.job_name)
+
+    @property
+    def get_script_filename(self):
+        return os.path.join(self.script_dirname,
+                            str(self.script_filename_key) + '.sh')
 
     @property
     def script_filename(self):
@@ -130,34 +125,7 @@ class RunMeta(object):
                 self.script_filename_key = randint(0, 10000)
         return self.get_script_filename
 
-    @property
-    def get_script_filename(self):
-        return os.path.join(self.script_dirname,
-                            str(self.script_filename_key) + '.sh')
-
-    @property
-    def job_ended(self):
-        ended = True
-        if self.job_crashed:
-            return ended
-        else:
-            oarstat_lines = cmd("ssh " + self.machine_name + " ' oarstat ' ")
-            for line in oarstat_lines:
-                if self.job_id in line:
-                    ended = False
-                    break
-            return ended
-
-    @property
-    def previous_jobs_ended(self):
-        ended = True
-        for jobs in self.previous_jobs:
-            if jobs.job_ended:
-                ended = False
-                break
-        return ended
-
-    """  """
+    """ Management of the oarsub command """
 
     @property
     def oarsub_command(self):
@@ -188,10 +156,26 @@ class RunMeta(object):
             options += '-t besteffort -t idempotent'
         return options + ' '
 
-    @property
-    def oarsub_dirname(self):
-        return os.path.join(self.job_dirname, settings['OARSUB_DIRNAME'])
+    """ Management of the monitoring """
 
-    @property
-    def script_dirname(self):
-        return os.path.join(self.job_dirname, settings['SCRIPT_DIRNAME'])
+    def job_study(self):
+        # Job study
+        # check if job ended well (i.e., script should have deleted itself)
+        # TODO: check if in  a killed besteffort, that the script is not deleted
+        if os.path.exists(self.script_filename):
+            # delete the bash script
+            cmd('rm ' + self.script_filename)
+            # send a report of the crash by mail
+            command_mail = 'cat ' + os.path.join(self.oarsub_dirname, self.job_id + '_stderr.txt')
+            command_mail += ' | mail -s "Failure report of ' + self.job_name + '" ' + EMAIL
+            cmd(command_mail)
+            # declare job as crashed to avoid running following jobs
+            self.job_crashed = True
+        else:
+            self.job_done = True
+            # final monitoring
+            # self.monitoring()
+            # TODO Philippe lui copie les fichier OAR a une destination correspond au model que l on a en entraine,
+            # TODO proposer surement l empalcement du fichier ou le fichier doit etre copie
+            # TODO in the process let the path to the OAR files to come back process them again if needed
+            # self.path_exe_parse()
