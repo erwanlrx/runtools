@@ -45,24 +45,31 @@ class RunMeta(object):
 
     @property
     def job_ended(self):
-        # TODO: each time this function is called, check if
         # TODO: this is the place where I will see if a job crashed or not. But this function will be called often
-        ended = True
-        if self.job_crashed:
-            return ended
+
+        # the job has not been started
+        if self.job_id is None:
+            print('None job id')
+            ended = False
+        # the job has crashed thus it has ended
+        elif self.job_crashed:
+            ended = True
         else:
+            print('Parsing oarstat')
+            ended = True
             oarstat_lines = cmd("ssh " + self.machine_name + " ' oarstat ' ")
             for line in oarstat_lines:
                 if self.job_id in line:
                     ended = False
                     break
-            return ended
+        return ended
 
     @property
     def previous_jobs_ended(self):
+        print(self.previous_jobs)
         ended = True
         for jobs in self.previous_jobs:
-            if jobs.job_ended:
+            if not jobs.job_ended:
                 ended = False
                 break
         return ended

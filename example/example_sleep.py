@@ -9,7 +9,7 @@ EXAMPLE_PATH = os.path.join(HOME, 'src/tools/example')
 class RunExample(RunCPU):
     def __init__(self, run_argv):
         RunCPU.__init__(self, run_argv)
-        self.path_exe_run = os.path.join(EXAMPLE_PATH, 'example.py')
+        self.path_exe_run = os.path.join(EXAMPLE_PATH, 'example_sleep.py')
         self.job_name = 'example'
 
     @property
@@ -18,4 +18,4 @@ class RunExample(RunCPU):
 
 
 if __name__ == '__main__':
-    cmd('sleep 20')
+    cmd('sleep 5')
