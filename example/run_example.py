@@ -23,8 +23,11 @@ def double_run(argv):
 def fork_run(argv):
     # Defining runs
     root_run = RunExample(argv)
+    root_run.job_name = 'root'
     child1_run = RunExample(argv)
+    child1_run.job_name = 'child1'
     child2_run = RunExample(argv)
+    child2_run.job_name = 'child2'
     runs = [root_run, child1_run, child2_run]
     # Defining dependencies
     child1_run.add_previous_run(root_run)
@@ -35,4 +38,6 @@ def fork_run(argv):
 
 if __name__ == '__main__':
     # single_run(sys.argv[1:])
-    double_run(sys.argv[1:])
+    # double_run(sys.argv[1:])
+    fork_run(sys.argv[1:])
+

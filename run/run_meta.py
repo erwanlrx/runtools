@@ -49,13 +49,12 @@ class RunMeta(object):
 
         # the job has not been started
         if self.job_id is None:
-            print('None job id')
             ended = False
         # the job has crashed thus it has ended
         elif self.job_crashed:
             ended = True
+        # the job has been launched, we check if it is still running
         else:
-            print('Parsing oarstat')
             ended = True
             oarstat_lines = cmd("ssh " + self.machine_name + " ' oarstat ' ")
             for line in oarstat_lines:
@@ -125,6 +124,7 @@ class RunMeta(object):
         that's the reason I decided to use a random number to define the key
         :return: a string specifying the path to the bash script
         """
+        # TODO: Put the date also in the filename
         if self.script_filename_key is None:
             # initializing the script_filename_key
             self.script_filename_key = 0

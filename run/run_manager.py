@@ -8,13 +8,10 @@ def manage(runs, sleep_duration=1):
     runs_waiting_previous_jobs = runs  # type: list[RunMeta]
     runs_waiting_max_default_jobs = []  # type: list[RunMeta]
     while runs_waiting_previous_jobs != [] or runs_waiting_max_default_jobs != []:
-        print('loop')
         # runs waiting because of previous jobs
         selected_runs = []
         for run in runs_waiting_previous_jobs:
-            print('loop1')
             if run.previous_jobs_ended:
-                print('Switch list', run.job_name)
                 selected_runs.append(run)
         for run in selected_runs:
             runs_waiting_previous_jobs.remove(run)
@@ -24,8 +21,8 @@ def manage(runs, sleep_duration=1):
         for run in runs_waiting_max_default_jobs:
             if run_avaible(run.machine_name):
                 selected_runs.append(run)
-                run.run()
         for run in selected_runs:
+            run.run()
             runs_waiting_max_default_jobs.remove(run)
         # sleeping
         cmd('sleep %i' % sleep_duration)
