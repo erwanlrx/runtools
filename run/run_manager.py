@@ -1,7 +1,7 @@
 from run.run_meta import RunMeta
 from pytools.tools import cmd
 
-""" Class of functions that take a list of RunObject as input """
+""" Class of functions that take a list of RunMeta as input """
 
 
 def manage(runs, sleep_duration=1):
@@ -17,11 +17,13 @@ def manage(runs, sleep_duration=1):
             runs_waiting_previous_jobs.remove(run)
             runs_waiting_max_default_jobs.append(run)
         # runs waiting because of max default jobs
-        selected_runs = []
+        selected_run = []
         for run in runs_waiting_max_default_jobs:
             if run_avaible(run.machine_name):
-                selected_runs.append(run)
-        for run in selected_runs:
+                # a single run is selected to avoid exceeding max default jobs
+                selected_run.append(run)
+                break
+        for run in selected_run:
             run.run()
             runs_waiting_max_default_jobs.remove(run)
         # sleeping
@@ -37,4 +39,5 @@ def run_avaible(machine):
 def visualizes(runs):
     # Get a summary of the result
     # or get a summary of why it crashed
-    pass
+    for run in runs:
+        run.monotoring()

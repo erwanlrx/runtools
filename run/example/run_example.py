@@ -1,6 +1,7 @@
-from example.example_sleep import RunExample
-from run.run_manager import manage
 import sys
+
+from run.example.example_sleep import RunExample
+from run.run_manager import manage
 
 
 def single_run(argv):

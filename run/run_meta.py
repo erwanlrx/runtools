@@ -12,6 +12,7 @@ class RunMeta(object):
         # Run settings
         self.machine_name = None
         self.besteffort = False
+        self.python_interpreter = 'python'
         self.path_exe_run = None
         self.path_exe_monitor = None
         self.previous_jobs = []  # type: list[RunMeta]
@@ -88,8 +89,7 @@ class RunMeta(object):
         # building the list of commands for the script
         commands = list()
         # launch a python exe
-        print(self.path_exe_run)
-        commands.append('python ' + self.path_exe_run + ' ' + ' '.join(self.run_argv))
+        commands.append(' '.join([self.python_interpreter, self.path_exe_run] + self.run_argv))
         # script file delete itself when finished
         commands.append('rm ' + self.script_filename + '\n')
         # write into the bash script
