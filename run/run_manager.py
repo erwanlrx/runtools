@@ -19,7 +19,7 @@ def manage(runs, sleep_duration=1):
         # runs waiting because of max default jobs
         selected_run = []
         for run in runs_waiting_max_default_jobs:
-            if run_avaible(run.machine_name):
+            if run_available(run.machine_name):
                 # a single run is selected to avoid exceeding max default jobs
                 selected_run.append(run)
                 break
@@ -32,12 +32,7 @@ def manage(runs, sleep_duration=1):
 # TODO The manager is going to be the one doing the visualization somewhere
 
 
-def run_avaible(machine):
+def run_available(machine):
     return True
 
 
-def visualizes(runs):
-    # Get a summary of the result
-    # or get a summary of why it crashed
-    for run in runs:
-        run.monotoring()

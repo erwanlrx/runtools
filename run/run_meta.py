@@ -13,8 +13,7 @@ class RunMeta(object):
         self.machine_name = None
         self.besteffort = False
         self.python_interpreter = 'python'
-        self.path_exe_run = None
-        self.path_exe_monitor = None
+        self.path_exe = None
         self.previous_jobs = []  # type: list[RunMeta]
         self.oarstat_check_frequency = 5
         # Internal settings (do not override these field)
@@ -66,7 +65,6 @@ class RunMeta(object):
 
     @property
     def previous_jobs_ended(self):
-        print(self.previous_jobs)
         ended = True
         for jobs in self.previous_jobs:
             if not jobs.job_ended:
@@ -89,7 +87,7 @@ class RunMeta(object):
         # building the list of commands for the script
         commands = list()
         # launch a python exe
-        commands.append(' '.join([self.python_interpreter, self.path_exe_run] + self.run_argv))
+        commands.append(' '.join([self.python_interpreter, self.path_exe] + self.run_argv))
         # script file delete itself when finished
         commands.append('rm ' + self.script_filename + '\n')
         # write into the bash script
