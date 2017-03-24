@@ -1,5 +1,6 @@
 from run.run_meta import RunMeta
 from pytools.tools import cmd
+from settings import MAX_DEFAULT_JOBS
 
 """ Class of functions that take a list of RunMeta as input """
 
@@ -29,10 +30,13 @@ def manage(runs, sleep_duration=1):
         # sleeping
         cmd('sleep %i' % sleep_duration)
 
-# TODO The manager is going to be the one doing the visualization somewhere
 
-
-def run_available(machine):
-    return True
+def run_available(machine_name):
+    oarstat_lines = cmd("ssh " + machine_name + " ' oarstat ' ")
+    jobs_nb = 0
+    for line in oarstat_lines:
+        if 'erleroux' in line:
+            jobs_nb += 1
+    return jobs_nb < MAX_DEFAULT_JOBS[machine_name]
 
 

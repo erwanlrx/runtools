@@ -14,6 +14,6 @@ SCRIPT_DIRNAME = os.path.join(OAR_DIRNAME, 'script')
 # INRIA settings
 CPU_MACHINE = 'clear'
 GPU_MACHINE = 'edgar'
-GPU_MAX_DEFAULT_JOBS = 2
+MAX_DEFAULT_JOBS = {GPU_MACHINE: 1, CPU_MACHINE: 10}
 
 
