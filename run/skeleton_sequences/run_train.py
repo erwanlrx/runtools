@@ -5,11 +5,9 @@ SKELETON_SEQUENCE_TRAIN_PATH = '/home/lear/erleroux/src/skeleton_sequences/tenso
 PYTHON_INTERPRETER = 'python3'
 
 
-def train_val_test_runs(run_argv, run_prefix, run_prefix_suffix, machine='gpu'):
-    job_name = run_prefix + run_prefix_suffix
-    train_run_argv = run_argv + ['run_prefix=' + run_prefix]
-    validation_run_argv = run_argv + ['run_prefix=' + job_name, 'evaluation_name=validation']
-    test_run_argv = run_argv + ['run_prefix=' + job_name, 'evaluation_name=test']
+def train_val_test_runs(train_run_argv, evaluation_run_argv, job_name, machine='gpu', only_evaluating=False):
+    validation_run_argv = evaluation_run_argv + ['evaluation_name=validation']
+    test_run_argv = evaluation_run_argv + ['evaluation_name=test']
     if machine == 'gpu':
         train_run = RunGPUTrain(train_run_argv, job_name)
         validation_run = RunGPUEvaluation(validation_run_argv, job_name)
@@ -19,9 +17,12 @@ def train_val_test_runs(run_argv, run_prefix, run_prefix_suffix, machine='gpu'):
         validation_run = RunCPUEvaluation(validation_run_argv, job_name)
         test_run = RunCPUEvaluation(test_run_argv, job_name)
     # Add dependencies
-    validation_run.add_previous_run(train_run)
     test_run.add_previous_run(validation_run)
-    return [train_run, validation_run, test_run]
+    if only_evaluating:
+        return [validation_run, test_run]
+    else:
+        validation_run.add_previous_run(train_run)
+        return [train_run, validation_run, test_run]
 
 
 class RunGPUTrain(RunGPU):

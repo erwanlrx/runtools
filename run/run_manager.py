@@ -24,7 +24,7 @@ def manage(runs, sleep_duration=1):
                 # a single run is selected to avoid exceeding max default jobs
                 selected_run.append(run)
                 break
-        for run in selected_run:
+        for run in selected_run[:1]:
             run.run()
             runs_waiting_max_default_jobs.remove(run)
         # sleeping
