@@ -14,3 +14,7 @@ class RunCPU(RunMeta):
         RunMeta.__init__(self, run_argv)
         self.machine_name = CPU_MACHINE
 
+    @property
+    def oarsub_options(self):
+        return RunMeta(self).oarsub_options + ' -p "cluster= \'\"\'\"\'ubuntu\'\"\'\"\'" '
+

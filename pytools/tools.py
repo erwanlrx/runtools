@@ -1,7 +1,11 @@
 from distutils.util import strtobool
 import sys
 import subprocess as sp
+from subprocess import check_output
+from multiprocessing import cpu_count
 
+def get_ncpus():
+    return min(cpu_count(), int(check_output('nproc')))
 
 # Call bash function from python
 def cmd(command, print_command=False):
@@ -27,7 +31,7 @@ def query(question):
 # Kill multiple process of the same kind
 def killall(process_name):
     processus = cmd('ps aux | grep ' + process_name)
-    processus = [ p for p in processus if 'grep ' not in p]
+    processus = [p for p in processus if 'grep ' not in p]
     print('Listing all the process...')
     for process in processus:
         print(' '.join(process.split()[10:]))
@@ -37,5 +41,3 @@ def killall(process_name):
         command = 'kill -9 ' + str(pid)
         print(command)
         cmd(command)
-
-

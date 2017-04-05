@@ -86,6 +86,10 @@ class RunMeta(object):
         cmd('touch ' + self.script_filename)
         # building the list of commands for the script
         commands = list()
+        # install needed library on CPU node
+        if self.machine_name == 'clear':
+            for library in ['joblib', 'scipy']:
+                commands.append('sudo apt-get install python3-' + library + ' --yes')
         # launch a python exe
         commands.append(' '.join([self.python_interpreter, self.path_exe] + self.run_argv))
         # script file delete itself when finished
