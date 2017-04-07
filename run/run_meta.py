@@ -12,6 +12,7 @@ class RunMeta(object):
         # Run settings
         self.machine_name = None
         self.besteffort = False
+        self.priority_level = 1
         self.interpreter = 'python'
         self.path_exe = None
         self.previous_jobs = []  # type: list[RunMeta]
