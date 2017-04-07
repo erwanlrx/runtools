@@ -1,44 +1,19 @@
-import sys
+from run.run_machine import RunCPU
+import os
+from settings import HOME
 
-from run.example.example_sleep import RunExample
-from run.run_manager import manage
-
-
-def single_run(argv):
-    RunExample(argv).run()
+EXAMPLE_PATH = os.path.join(HOME, 'src/tools/example')
 
 
-def double_run(argv):
-    # Defining runs
-    root_run = RunExample(argv)
-    root_run.job_name = 'root'
-    child_run = RunExample(argv)
-    child_run.job_name = 'child'
-    runs = [root_run, child_run]
-    # Defining dependencies
-    child_run.add_previous_run(root_run)
-    # Running
-    manage(runs)
+class RunExample(RunCPU):
+    def __init__(self, run_argv):
+        RunCPU.__init__(self, run_argv)
+        self.path_exe_run = os.path.join(EXAMPLE_PATH, 'path_exe_run_example.py')
+        self.job_name = 'example'
 
-
-def fork_run(argv):
-    # Defining runs
-    root_run = RunExample(argv)
-    root_run.job_name = 'root'
-    child1_run = RunExample(argv)
-    child1_run.job_name = 'child1'
-    child2_run = RunExample(argv)
-    child2_run.job_name = 'child2'
-    runs = [root_run, child1_run, child2_run]
-    # Defining dependencies
-    child1_run.add_previous_run(root_run)
-    child2_run.add_previous_run(root_run)
-    # Running
-    manage(runs)
-
+    @property
+    def oarsub_options(self):
+        return RunCPU(self).oarsub_options + ' -l "nodes=1/core=1,walltime=1:0:0"'
 
 if __name__ == '__main__':
-    # single_run(sys.argv[1:])
-    # double_run(sys.argv[1:])
-    fork_run(sys.argv[1:])
-
+    RunExample([]).run()

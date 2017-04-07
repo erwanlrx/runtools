@@ -1,10 +1,13 @@
 from run.run_meta import RunMeta
 from pytools.tools import cmd
-from settings import MAX_DEFAULT_JOBS
+from settings import LOGIN, MAX_DEFAULT_JOBS
 
 """ Class of functions that take a list of RunMeta as input """
 
 
+# TODO: put some kind of priority for the chain of jobs, and if no priotity jobs just loop on more time to let
+# TODO: just add some priority number
+# the job to the priority jobs if there is one waiting
 def manage(runs, sleep_duration=1):
     runs_waiting_previous_jobs = runs  # type: list[RunMeta]
     runs_waiting_max_default_jobs = []  # type: list[RunMeta]
@@ -35,8 +38,6 @@ def run_available(machine_name):
     oarstat_lines = cmd("ssh " + machine_name + " ' oarstat ' ")
     jobs_nb = 0
     for line in oarstat_lines:
-        if 'erleroux' in line:
+        if LOGIN in line:
             jobs_nb += 1
     return jobs_nb < MAX_DEFAULT_JOBS[machine_name]
-
-

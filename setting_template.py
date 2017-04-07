@@ -1,7 +1,7 @@
 import os
 
 # Personnal settings
-EMAIL = 'erwan.le-roux@inria.fr'
+EMAIL = '$surname.name@inria.fr'
 LOGIN = 'erleroux'
 
 # Directory settings
@@ -15,5 +15,3 @@ SCRIPT_DIRNAME = os.path.join(OAR_DIRNAME, 'script')
 CPU_MACHINE = 'clear'
 GPU_MACHINE = 'edgar'
 MAX_DEFAULT_JOBS = {GPU_MACHINE: 2, CPU_MACHINE: 10}
-
-

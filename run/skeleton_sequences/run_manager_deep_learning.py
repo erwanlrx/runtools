@@ -1,5 +1,5 @@
 import sys
-from run.skeleton_sequences.run_train import train_val_test_runs
+from run.skeleton_sequences.run_deep_learning import train_val_test_runs
 from run.run_manager import manage
 
 sys.path.append('/home/lear/erleroux/src/skeleton_sequences')
@@ -12,29 +12,28 @@ from itertools import product
 runs = []
 
 """ COPY AREA"""
-run_prefix = 'clip_brnn'
-idxs = [[0], [1], [1], [0]]
+run_prefix = 'two_stream_new'
+idxs = [[0], [1], [1], [1]]
 
-restore = True
-restore_run_dir = 'clip_brnn-learning_rate0.001-dropout_prob0.5-clip_gradient_norm1-rnn_units100-rnn_layers3-rnn_typelstm_1'
-restore_checkpoint_filename = '10000'
+restore = False
+restore_run_dir = 'two_stream_new-learning_rate0.0001-clip_gradient_norm0_1'
+restore_checkpoint_filename = '4000'
 
 # Training setting
 for idx in product(*idxs):
     argv1 = main_argv(*idx)
-    argv1.extend(['training_steps=30000', 'top_n_to_test=5',
-                  'summary_flush_rate=100', 'checkpoint_rate=1000'])
+    argv1.extend(['run_prefix=' + run_prefix, 'training_steps=10000', 'summary_flush_rate=50', 'checkpoint_rate=1000'])
 
     # Training hyperparameters
     # TODO: add type of prediction, and regularization parameter
-    for batch_size, learning_rate, dropout_prob, clip_gradient_norm in product([256], [1e-3, 1e-4], [0.5], [1]):
+    for batch_size, learning_rate, dropout_prob, clip_gradient_norm in product([256], [1e-4], [0.75], [0]):
         argv2 = argv1[:] + ['batch_size=' + str(batch_size), 'learning_rate=' + str(learning_rate)]
-        argv2 += ['dropout_prob=' + str(dropout_prob), 'clip_gradient_norm=' + str(clip_gradient_norm)]
+        argv2 += ['clip_gradient_norm=' + str(clip_gradient_norm)]
 
         # Model hyperparameters
-        for rnn_units, rnn_layers, rnn_type in product([100], [3], ['lstm']):
+        for rnn_units, rnn_layers, rnn_type in product([300], [2], ['gru']):
             argv3 = argv2[:]
-            argv3.extend(['rnn_units=' + str(rnn_units), 'rnn_layers=' + str(rnn_layers), 'rnn_type=' + rnn_type])
+            # argv3.extend(['rnn_units=' + str(rnn_units), 'rnn_layers=' + str(rnn_layers), 'rnn_type=' + rnn_type])
 
             """ END COPY AREA """
 
@@ -48,6 +47,6 @@ for idx in product(*idxs):
             job_name = run_prefix + run_prefix_suffix(argv3)
             evaluation_run_argv = argv3 + ['run_prefix=' + job_name]
             runs.extend(train_val_test_runs(train_run_argv, evaluation_run_argv, job_name,
-                                            machine='gpu', only_evaluating=False))
+                                            machine='gpu', only_evaluating=True))
 # print(len(runs) / 3)
 manage(runs)

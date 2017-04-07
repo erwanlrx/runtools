@@ -29,14 +29,7 @@ if __name__ == '__main__':
                         duration = (job.split(' R=')[0]).split(' ')[-1]
                         print_list = [job_name, job_number, duration]
 
-                        # # Extracting information from the OAR files
-                        # # Enable extraction of the OAR file stdout and stderr information
-                        # OAR_filename = os.path.join(OARSUB_DIRNAME, job_name, job_number + '_stderr.txt')
-                        # if os.path.exists(OAR_filename):
-                        #     tail = cmd('tail -n 1 ' + OAR_filename)
-                        #     if tail != [] and 'Iteration' in tail[0]:
-                        #         iterations = (tail[0].split(']')[1]).split(', lr')[0]
-                        #         print_list += [iterations]
+                        # TODO:Let user write function to parse the OAR files, and display information during monitoring
 
                         print_line += '  '.join(print_list) + '\n'
         print(print_line)

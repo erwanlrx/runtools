@@ -1,7 +1,8 @@
 print("executing pythonstartup.py")
-import numpy as np
-from tools import cmd
 import os
+import numpy as np
+from pytools.tools import cmd
+
 
 
 

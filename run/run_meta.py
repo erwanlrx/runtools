@@ -12,7 +12,7 @@ class RunMeta(object):
         # Run settings
         self.machine_name = None
         self.besteffort = False
-        self.python_interpreter = 'python'
+        self.interpreter = 'python'
         self.path_exe = None
         self.previous_jobs = []  # type: list[RunMeta]
         self.oarstat_check_frequency = 5
@@ -29,8 +29,8 @@ class RunMeta(object):
                 -A job is launched to process the bash script we just generated
         """
         # check if previous jobs have crashed or not
-        for jobs in self.previous_jobs:
-            if jobs.job_crashed:
+        for job in self.previous_jobs:
+            if job.job_crashed:
                 self.job_crashed = True
                 break
         if not self.job_crashed:
@@ -46,13 +46,13 @@ class RunMeta(object):
     @property
     def job_ended(self):
         # TODO: this is the place where I will see if a job crashed or not. But this function will be called often
-
-        # the job has not been started
-        if self.job_id is None:
-            ended = False
         # the job has crashed thus it has ended
-        elif self.job_crashed:
+        if self.job_crashed:
+            print('job crashed')
             ended = True
+        # the job has not been started
+        elif self.job_id is None:
+            ended = False
         # the job has been launched, we check if it is still running
         else:
             ended = True
@@ -80,18 +80,18 @@ class RunMeta(object):
         :param argv: parameters for the script to run
         """
         # build script_dirname if it has not yet been created
-        if not os.path.exists(self.script_dirname):
-            os.makedirs(self.script_dirname)
+        if not os.path.exists(self.oarsub_dirname):
+            os.makedirs(self.oarsub_dirname)
         # create script_filename file
         cmd('touch ' + self.script_filename)
         # building the list of commands for the script
         commands = list()
         # install needed library on CPU node
         if self.machine_name == 'clear':
-            for library in ['joblib', 'scipy']:
+            for library in ['scipy']:
                 commands.append('sudo apt-get install python3-' + library + ' --yes')
         # launch a python exe
-        commands.append(' '.join([self.python_interpreter, self.path_exe] + self.run_argv))
+        commands.append(' '.join([self.interpreter, self.path_exe] + self.run_argv))
         # script file delete itself when finished
         commands.append('rm ' + self.script_filename + '\n')
         # write into the bash script
