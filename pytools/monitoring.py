@@ -22,14 +22,16 @@ if __name__ == '__main__':
                     if (job.split(' ')[-2]).split('J=')[-1] != 'I':
 
                         # Extracting information and initializing a list for printing
-                        job_number = job.split(' ')[0]
+                        job_id = job.split(' ')[0]
                         job_name = ''
                         if len(job.split('N=')) > 1 and len((job.split('N=')[1]).split(' (')) > 0:
                             job_name = (job.split('N=')[1]).split(' (')[0]
                         duration = (job.split(' R=')[0]).split(' ')[-1]
-                        print_list = [job_name, job_number, duration]
+                        print_list = [job_name, job_id, duration]
 
                         # TODO:Let user write function to parse the OAR files, and display information during monitoring
+                        # with this kind of stuff we can open the OAR file:
+                        # os.path.join(OARSUB_DIRNAME, job_name, job_id + 'stderr')
 
                         print_line += '  '.join(print_list) + '\n'
         print(print_line)

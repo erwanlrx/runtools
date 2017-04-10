@@ -7,7 +7,7 @@ LOGIN = 'erleroux'
 # Directory settings
 HOME = '/home/lear/erleroux'
 PROJECT_ROOT = os.path.join(HOME, 'src/tools')
-OAR_DIRNAME = os.path.join(HOME, 'OAR')
+OAR_DIRNAME = os.path.join(HOME, 'links/shortcut/OAR')
 OARSUB_DIRNAME = os.path.join(OAR_DIRNAME, 'oarsub')
 SCRIPT_DIRNAME = os.path.join(OAR_DIRNAME, 'script')
 
