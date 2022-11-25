@@ -6,7 +6,7 @@ import os.path as op
 from settings import DOCUMENTS
 
 TIPHYC_PATH = op.join(DOCUMENTS, "tiphyc_wp3")
-local_interpreter = op.join(TIPHYC_PATH, "venv/bin/python3")
+local_interpreter = op.join(TIPHYC_PATH, "venv/bin/python3.9")
 
 
 class AbstractRunTipHyc(RunCPU):
@@ -18,7 +18,7 @@ class AbstractRunTipHyc(RunCPU):
 
     @property
     def oarsub_options(self):
-        return RunCPU(self).oarsub_options + ' -l "nodes=1/core=4,walltime=10:0:0"'
+        return RunCPU(self).oarsub_options + ' -l "nodes=1/core=32,walltime=40:0:0"'
 
 
 class RunCalibrationWendling2019(AbstractRunTipHyc):
@@ -27,5 +27,11 @@ class RunCalibrationWendling2019(AbstractRunTipHyc):
         super().__init__(run_argv, "main_wendling_2019_obs")
 
 
+class RunCalibrationWendling2022(AbstractRunTipHyc):
+
+    def __init__(self, run_argv):
+        super().__init__(run_argv, "main_wendling_2022_obs")
+
+
 if __name__ == '__main__':
-    RunCalibrationWendling2019([]).run()
+    RunCalibrationWendling2022(['0']).run()
