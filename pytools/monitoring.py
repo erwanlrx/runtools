@@ -1,7 +1,7 @@
 import subprocess as sp
 import os, sys
 from pytools.tools import cmd
-from settings import LOGIN, OARSUB_DIRNAME
+from settings import LOGIN, OARSUB_DIRNAME, MACHINE
 
 """ Monitor only the master"""
 
@@ -9,7 +9,7 @@ if __name__ == '__main__':
 
     while 1:
         print_line = ' \nMonitoring... \n'
-        for machine in ['edgar', 'clear']:
+        for machine in [MACHINE]:
             try:
                 jobs = cmd("ssh " + machine + " 'oarstat | grep " + LOGIN + "'")
             except sp.CalledProcessError as e:
@@ -39,4 +39,4 @@ if __name__ == '__main__':
         if len(sys.argv) > 1:
             cmd('sleep ' + sys.argv[1])
         else:
-            cmd('sleep 10')
+            cmd('sleep 2')

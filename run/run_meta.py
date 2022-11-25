@@ -1,7 +1,9 @@
-import os, sys
+import os
+import os.path as op
 from random import randint
+
 from pytools.tools import cmd
-from settings import EMAIL, SCRIPT_DIRNAME, OARSUB_DIRNAME
+from settings import SCRIPT_DIRNAME, OARSUB_DIRNAME, PROJECT_PATH, LOGIN, MACHINE, LINK_PATH
 
 
 class RunMeta(object):
@@ -83,14 +85,17 @@ class RunMeta(object):
         """
         # build script_dirname if it has not yet been created
         if not os.path.exists(self.script_dirname):
-            os.makedirs(self.script_dirname)
+            os.makedirs(self.script_dirname, exist_ok=True)
+        if not op.exists(self.oarsub_dirname):
+            os.makedirs(self.oarsub_dirname, exist_ok=True)
         # create script_filename file
         cmd('touch ' + self.script_filename)
         # building the list of commands for the script
         commands = list()
         # install libraries that have been specified
         for library in self.librairies_to_install:
-            commands.append('sudo apt-get install ' + library + ' --yes')
+            print('we do not install library anymore')
+            # commands.append('sudo apt-get install ' + library + ' --yes')
         # launch a python exe
         commands.append(' '.join([self.interpreter, self.path_exe] + self.run_argv))
         # script file delete itself when finished
@@ -101,6 +106,8 @@ class RunMeta(object):
                 f.write('{0} \n'.format(command))
         # give the permission to the bash script to execute
         cmd('chmod +x ' + self.script_filename)
+        path_runtools_folder = LINK_PATH + '/'
+        cmd('rsync -r {} {}@{}:{}'.format(path_runtools_folder, LOGIN, MACHINE, path_runtools_folder))
 
     @property
     def oarsub_dirname(self):
@@ -149,10 +156,10 @@ class RunMeta(object):
         if not os.path.exists(self.oarsub_dirname):
             os.makedirs(self.oarsub_dirname)
         # Redirecting the stdout and stderr
-        stdnames = ['out', 'err']
+        stdnames = ['O', 'E']
         stdfiles = [os.path.join(self.oarsub_dirname, '%jobid%_std' + stdname + '.txt') for stdname in stdnames]
         for stdname, stdfile in zip(stdnames, stdfiles):
-            command += ' --std' + stdname + '="' + stdfile + '"'
+            command += ' -' + stdname + ' "' + stdfile + '"'
         # Finally add the script to launch
         command += ' "' + self.script_filename + '"'
         command += " '"
@@ -161,7 +168,7 @@ class RunMeta(object):
 
     @property
     def oarsub_options(self):
-        options = ''
+        options = '--project=pr-sno-elmerice '
         if self.besteffort:
             options += '-t besteffort -t idempotent'
         return options + ' '
@@ -176,9 +183,9 @@ class RunMeta(object):
             # delete the bash script
             cmd('rm ' + self.script_filename)
             # send a report of the crash by mail
-            command_mail = 'cat ' + os.path.join(self.oarsub_dirname, self.job_id + '_stderr.txt')
-            command_mail += ' | mail -s "Failure report of ' + self.job_name + '" ' + EMAIL
-            cmd(command_mail)
+            # command_mail = 'cat ' + os.path.join(self.oarsub_dirname, self.job_id + '_stderr.txt')
+            # command_mail += ' | mail -s "Failure report of ' + self.job_name + '" ' + EMAIL
+            # cmd(command_mail)
             # declare job as crashed to avoid running following jobs
             self.job_crashed = True
         else:

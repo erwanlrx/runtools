@@ -1,8 +1,8 @@
 from run.run_machine import RunCPU
 import os
-from settings import HOME
+from settings import DOCUMENTS
 
-EXAMPLE_PATH = os.path.join(HOME, 'src/tools/example')
+EXAMPLE_PATH = os.path.join(DOCUMENTS, 'src/tools/example')
 
 
 class RunExample(RunCPU):

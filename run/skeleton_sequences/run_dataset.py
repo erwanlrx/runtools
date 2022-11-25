@@ -1,9 +1,9 @@
 from run.run_machine import RunCPU
 import os
-from settings import HOME
+from settings import DOCUMENTS
 
 # Enable to parallelize, and accelerate the creation of datasets
-SKELETON_SEQUENCE_DATASET_WRITER_PATH = os.path.join(HOME, 'src/skeleton_sequences/tensorflow_datasets')
+SKELETON_SEQUENCE_DATASET_WRITER_PATH = os.path.join(DOCUMENTS, 'src/skeleton_sequences/tensorflow_datasets')
 
 
 class RunDataset(RunCPU):
