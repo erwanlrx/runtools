@@ -27,11 +27,17 @@ class RunCalibrationWendling2019(AbstractRunTipHyc):
         super().__init__(run_argv, "main_wendling_2019_obs")
 
 
-class RunCalibrationWendling2022(AbstractRunTipHyc):
+class RunCalibrationWendling2022Obs(AbstractRunTipHyc):
 
     def __init__(self, run_argv):
         super().__init__(run_argv, "main_wendling_2022_obs")
 
 
+class RunCalibrationWendling2022Simu(AbstractRunTipHyc):
+
+    def __init__(self, run_argv):
+        super().__init__(run_argv, "main_wendling_2022_simu")
+
+
 if __name__ == '__main__':
-    RunCalibrationWendling2022(['0']).run()
+    RunCalibrationWendling2022Simu(['0']).run()
