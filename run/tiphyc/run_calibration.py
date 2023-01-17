@@ -34,5 +34,4 @@ class RunCalibrationWendling2022(AbstractRunTipHyc):
 
 
 if __name__ == '__main__':
-    # RunCalibrationWendling2022Simu(['0']).run()
     RunCalibrationWendling2022(['0']).run()
