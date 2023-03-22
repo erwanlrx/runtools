@@ -9,6 +9,7 @@ TIPHYC_PATH = op.join(DOCUMENTS, "tiphyc_wp3")
 local_interpreter = op.join(TIPHYC_PATH, "venv/bin/python3.9")
 
 
+
 class AbstractRunTipHyc(RunCPU):
     def __init__(self, run_argv, job_name):
         RunCPU.__init__(self, run_argv)
