@@ -19,8 +19,7 @@ class AbstractRunTipHyc(RunCPU):
 
     @property
     def oarsub_options(self):
-        return RunCPU(self).oarsub_options + ' -l "core=16,walltime=40:0:0"'
-        # return RunCPU(self).oarsub_options + ' -l "core=64,walltime=40:0:0"'
+        return RunCPU(self).oarsub_options + ' -l "core=64,walltime=40:0:0"'
 
 
 class RunCalibrationWendling2019(AbstractRunTipHyc):
