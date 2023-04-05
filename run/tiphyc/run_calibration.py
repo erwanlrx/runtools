@@ -35,5 +35,5 @@ class RunCalibrationWendling2022(AbstractRunTipHyc):
 
 
 if __name__ == '__main__':
-    for i in list(range(4))[:]:
+    for i in list(range(4, 6))[:]:
         RunCalibrationWendling2022([str(i)]).run()
