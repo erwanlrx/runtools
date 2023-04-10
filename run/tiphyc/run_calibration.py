@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from run.run_machine import RunCPU
 import os.path as op
@@ -46,4 +47,6 @@ class RunIndicatorComputation(AbstractRunTipHyc):
 if __name__ == '__main__':
     # for i in list(range(4, 6))[:]:
     #     RunCalibrationWendling2022([str(i)]).run()
-    RunIndicatorComputation(['0']).run()
+    short_sha = subprocess.check_output(['git', '--git-dir={}/.git'.format(TIPHYC_PATH),
+                                         'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
+    RunIndicatorComputation([short_sha]).run()
