@@ -11,10 +11,10 @@ local_interpreter = op.join(TIPHYC_PATH, "venv/bin/python3.9")
 
 
 class AbstractRunTipHyc(RunCPU):
-    def __init__(self, run_argv, job_name):
+    def __init__(self, run_argv, analysis_folder, job_name):
         RunCPU.__init__(self, run_argv)
         self.interpreter = local_interpreter
-        self.path_exe = os.path.join(TIPHYC_PATH, 'analysis/trajectory/{}.py'.format(job_name))
+        self.path_exe = os.path.join(TIPHYC_PATH, 'analysis/{}/{}.py'.format(analysis_folder, job_name))
         self.job_name = job_name
 
     @property
@@ -25,15 +25,25 @@ class AbstractRunTipHyc(RunCPU):
 class RunCalibrationWendling2019(AbstractRunTipHyc):
 
     def __init__(self, run_argv):
-        super().__init__(run_argv, "main_wendling_2019")
+        super().__init__(run_argv, "trajectory", "main_wendling_2019")
 
 
 class RunCalibrationWendling2022(AbstractRunTipHyc):
 
     def __init__(self, run_argv):
-        super().__init__(run_argv, "main_wendling_2022")
+        super().__init__(run_argv, "trajectory", "main_wendling_2022")
+
+class RunIndicatorComputation(AbstractRunTipHyc):
+
+    def __init__(self, run_argv):
+        super().__init__(run_argv, "event_indicator", "main_save_stability_data")
+
+    @property
+    def oarsub_options(self):
+        return RunCPU(self).oarsub_options + ' -l "core=16,walltime=40:0:0"'
 
 
 if __name__ == '__main__':
-    for i in list(range(4, 6))[:]:
-        RunCalibrationWendling2022([str(i)]).run()
+    # for i in list(range(4, 6))[:]:
+    #     RunCalibrationWendling2022([str(i)]).run()
+    RunIndicatorComputation(['0']).run()

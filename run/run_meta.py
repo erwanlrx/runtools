@@ -92,12 +92,13 @@ class RunMeta(object):
         cmd('touch ' + self.script_filename)
         # building the list of commands for the script
         commands = list()
-        # install libraries that have been specified
-        for library in self.librairies_to_install:
-            print('we do not install library anymore')
-            # commands.append('sudo apt-get install ' + library + ' --yes')
+        folders = self.path_exe.split('/')
+        absolute_path = op.join(*folders[:4])
+        relative_path = op.join(*folders[4:])
+        # move inside the project
+        commands.append('cd /' + absolute_path)
         # launch a python exe
-        commands.append(' '.join([self.interpreter, self.path_exe] + self.run_argv))
+        commands.append(' '.join([self.interpreter, relative_path] + self.run_argv))
         # script file delete itself when finished
         commands.append('rm ' + self.script_filename + '\n')
         # write into the bash script
