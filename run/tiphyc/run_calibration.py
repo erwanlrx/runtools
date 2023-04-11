@@ -45,8 +45,9 @@ class RunIndicatorComputation(AbstractRunTipHyc):
 
 
 if __name__ == '__main__':
-    # for i in list(range(4, 6))[:]:
-    #     RunCalibrationWendling2022([str(i)]).run()
     short_sha = subprocess.check_output(['git', '--git-dir={}/.git'.format(TIPHYC_PATH),
                                          'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
-    RunIndicatorComputation([short_sha]).run()
+    for i in list(range(3, 5))[:]:
+        idx_watershed = str(i)
+        # RunCalibrationWendling2022([idx_watershed]).run()
+        RunIndicatorComputation([short_sha, idx_watershed]).run()
