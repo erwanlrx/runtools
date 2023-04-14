@@ -10,7 +10,6 @@ TIPHYC_PATH = op.join(DOCUMENTS, "tiphyc_wp3")
 local_interpreter = op.join(TIPHYC_PATH, "venv/bin/python3.9")
 
 
-
 class AbstractRunTipHyc(RunCPU):
     def __init__(self, run_argv, analysis_folder, job_name):
         RunCPU.__init__(self, run_argv)
@@ -20,7 +19,7 @@ class AbstractRunTipHyc(RunCPU):
 
     @property
     def oarsub_options(self):
-        return RunCPU(self).oarsub_options + ' -l "core=64,walltime=40:0:0"'
+        return RunCPU(self).oarsub_options + ' -l "core=16,walltime=40:0:0"'
 
 
 class RunCalibrationWendling2019(AbstractRunTipHyc):
@@ -34,6 +33,7 @@ class RunCalibrationWendling2022(AbstractRunTipHyc):
     def __init__(self, run_argv):
         super().__init__(run_argv, "trajectory", "main_wendling_2022")
 
+
 class RunIndicatorComputation(AbstractRunTipHyc):
 
     def __init__(self, run_argv):
@@ -44,12 +44,22 @@ class RunIndicatorComputation(AbstractRunTipHyc):
         return RunCPU(self).oarsub_options + ' -l "core=16,walltime=40:0:0"'
 
 
-if __name__ == '__main__':
+def main_save_indicator():
     short_sha = subprocess.check_output(['git', '--git-dir={}/.git'.format(TIPHYC_PATH),
                                          'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
-    for i in [0, 2, 4]:
+    for i in range(5):
         idx_watershed = str(i)
-        for j in [0, 9]:
+        for j in [0, 9][1:]:
             idx_final_year = str(j)
-            # RunCalibrationWendling2022([idx_watershed]).run()
             RunIndicatorComputation([short_sha, idx_watershed, idx_final_year]).run()
+
+
+def main_wendling2022_training():
+    for i in range(3):
+        idx_watershed = str(i)
+        RunCalibrationWendling2022([idx_watershed]).run()
+
+
+if __name__ == '__main__':
+    main_save_indicator()
+    # main_wendling2022_training()
