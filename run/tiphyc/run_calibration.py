@@ -37,7 +37,7 @@ class RunCalibrationWendling2022(AbstractRunTipHyc):
 class RunIndicatorComputation(AbstractRunTipHyc):
 
     def __init__(self, run_argv):
-        super().__init__(run_argv, "event_indicator", "main_save_stability_data")
+        super().__init__(run_argv, "stability_data", "main_save_stability_data")
 
     @property
     def oarsub_options(self):
@@ -47,7 +47,7 @@ class RunIndicatorComputation(AbstractRunTipHyc):
 def main_save_indicator():
     short_sha = subprocess.check_output(['git', '--git-dir={}/.git'.format(TIPHYC_PATH),
                                          'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
-    for i in range(5):
+    for i in range(5, 8):
         idx_watershed = str(i)
         for j in [0, 9][1:]:
             idx_final_year = str(j)
