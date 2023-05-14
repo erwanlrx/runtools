@@ -28,10 +28,10 @@ class RunCalibrationWendling2019(AbstractRunTipHyc):
         super().__init__(run_argv, "trajectory", "main_wendling_2019")
 
 
-class RunCalibrationWendling2022(AbstractRunTipHyc):
+class RunCalibrationTipHycAnnual(AbstractRunTipHyc):
 
     def __init__(self, run_argv):
-        super().__init__(run_argv, "trajectory", "main_wendling_2022")
+        super().__init__(run_argv, "trajectory", "main_tiphyc_annual")
 
 
 class RunIndicatorComputation(AbstractRunTipHyc):
@@ -57,7 +57,7 @@ def main_save_indicator():
 def main_wendling2022_training():
     for i in range(3):
         idx_watershed = str(i)
-        RunCalibrationWendling2022([idx_watershed]).run()
+        RunCalibrationTipHycAnnual([idx_watershed]).run()
 
 
 if __name__ == '__main__':
