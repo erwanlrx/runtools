@@ -3,7 +3,7 @@ import os.path as op
 from random import randint
 
 from pytools.tools import cmd
-from settings import SCRIPT_DIRNAME, OARSUB_DIRNAME, PROJECT_PATH, LOGIN, MACHINE, LINK_PATH
+from settings import SCRIPT_DIRNAME, OARSUB_DIRNAME, MACHINE, LINK_PATH, replace_user, LOGIN_ONLINE
 
 
 class RunMeta(object):
@@ -108,7 +108,7 @@ class RunMeta(object):
         # give the permission to the bash script to execute
         cmd('chmod +x ' + self.script_filename)
         path_runtools_folder = LINK_PATH + '/'
-        cmd('rsync -r {} {}@{}:{}'.format(path_runtools_folder, LOGIN, MACHINE, path_runtools_folder))
+        cmd('rsync -r {} {}@{}:{}'.format(path_runtools_folder, LOGIN_ONLINE, MACHINE, replace_user(path_runtools_folder)))
 
     @property
     def oarsub_dirname(self):
@@ -160,9 +160,10 @@ class RunMeta(object):
         stdnames = ['O', 'E']
         stdfiles = [os.path.join(self.oarsub_dirname, '%jobid%_std' + stdname + '.txt') for stdname in stdnames]
         for stdname, stdfile in zip(stdnames, stdfiles):
+            stdname, stdfile = replace_user(stdname), replace_user(stdfile)
             command += ' -' + stdname + ' "' + stdfile + '"'
         # Finally add the script to launch
-        command += ' "' + self.script_filename + '"'
+        command += ' "' + replace_user(self.script_filename) + '"'
         command += " '"
         print(command)
         return command

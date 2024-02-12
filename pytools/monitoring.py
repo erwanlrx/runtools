@@ -1,7 +1,7 @@
 import subprocess as sp
 import os, sys
 from pytools.tools import cmd
-from settings import LOGIN, OARSUB_DIRNAME, MACHINE
+from settings import OARSUB_DIRNAME, MACHINE, LOGIN_ONLINE
 
 """ Monitor only the master"""
 
@@ -11,7 +11,7 @@ if __name__ == '__main__':
         print_line = ' \nMonitoring... \n'
         for machine in [MACHINE]:
             try:
-                jobs = cmd("ssh " + machine + " 'oarstat | grep " + LOGIN + "'")
+                jobs = cmd("ssh " + machine + " 'oarstat | grep " + LOGIN_ONLINE + "'")
             except sp.CalledProcessError as e:
                 jobs = []
                 print_line += 'No jobs running on ' + machine + '\n'

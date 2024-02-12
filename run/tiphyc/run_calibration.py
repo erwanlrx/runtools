@@ -1,12 +1,10 @@
 import os
-import subprocess
-
-from run.run_machine import RunCPU
 import os.path as op
 
-from settings import DOCUMENTS
+from run.run_machine import RunCPU
+from settings import DOCUMENTS, replace_user
 
-TIPHYC_PATH = op.join(DOCUMENTS, "tiphyc_wp3")
+TIPHYC_PATH = replace_user(op.join(DOCUMENTS, "tiphyc_wp3"))
 local_interpreter = op.join(TIPHYC_PATH, "venv/bin/python3.9")
 
 
@@ -31,12 +29,13 @@ class RunCalibrationWendling2019(AbstractRunTipHyc):
 class RunCalibrationTipHycAnnual(AbstractRunTipHyc):
 
     def __init__(self, run_argv):
-        super().__init__(run_argv, "projects/tiphyc_attribution/calibration_section",
-                         "main_trajectory_tiphyc_annual")
+        super().__init__(run_argv, "projects/paper_attribution/section3_method",
+                         "main_calibration_runtools")
 
 
 def main_tiphyc_annual_calibration():
-    for i in range(4, 8):
+    attribution_i = list(range(4))
+    for i in attribution_i[1:]:
         idx_watershed = str(i)
         RunCalibrationTipHycAnnual([idx_watershed]).run()
 
