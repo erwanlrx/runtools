@@ -35,7 +35,8 @@ class RunCalibrationTipHycAnnual(AbstractRunTipHyc):
 
 def main_tiphyc_annual_calibration():
     attribution_i = list(range(4))
-    for i in attribution_i[1:]:
+    # attribution_i = list(range(4, 8))
+    for i in attribution_i:
         idx_watershed = str(i)
         RunCalibrationTipHycAnnual([idx_watershed]).run()
 
